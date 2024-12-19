@@ -2,6 +2,7 @@
 
 $todos = new App\ToDo();
 $bot = new App\Bot();
+$users= new App\Users();
 
 
 $update = json_decode(file_get_contents('php://input'));
@@ -17,43 +18,21 @@ if ($update) {
     }
     if (mb_stripos($update->message->text, '/start') !== false) {
         $userId = trim(explode('/start', $update->message->text)[1]);
-        $todo = json_encode($todos->getAllTodosOfUser(), JSON_PRETTY_PRINT);
-        $bot->makeRequest('sendMessage', [
-            'chat_id' => $chatId,
-            'text' => "<pre>" . htmlspecialchars($todo) . "</pre>",
-            'parse_mode' => 'html'
-        ]);
-        $bot->makeRequest('sendMessage', [
-            'chat_id' => $chatId,
-            'text' => "Welcome to the Todo App.\n Here's your tasks" . "<pre>" . htmlspecialchars($todo) . "</pre>"
-        ]);
+        $users->setTelegramId($userId,$chatId);
         exit();
     }
-    $ids = $todos->getIDs();
-    if (empty($ids)) {
-        $bot->makeRequest('sendMessage', [
-            'chat_id' => $chatId,
-            'text' => "No tasks found.",
-            'parse_mode' => 'html'
-        ]);
-        exit();
-    }
-    $taskId = intval($update->message->text);
-    foreach ($ids as $id) {
-        if ($id == $taskId) {
-            $todo = json_encode($todos->edit($taskId), JSON_PRETTY_PRINT);
-            $bot->makeRequest('sendMessage', [
-                'chat_id' => $chatId,
-                'text' => "<pre>" . htmlspecialchars($todo) . "</pre>",
-                'parse_mode' => 'html'
-            ]);
-            exit();
+    if ($update->message->text === '/tasks') {
+        $tasks = $todos->getTodoByTelegramId($chatId);
+        $taskList = "Your tasks:\n\n";
+        foreach ($tasks as $task) {
+            $taskList .= $task['title']."\n";
+            $taskList .= $task['due_date']."\n";
+            $taskList .= $task['status']."\n\n";
+            $taskList .= "**********************\n\n";
         }
+        $bot->makeRequest('sendMessage', [
+            'chat_id' => $chatId,
+            'text' => $taskList
+        ]);
     }
-    $idsText = implode(', ', $ids);
-    $bot->makeRequest('sendMessage', [
-        'chat_id' => $chatId,
-        'text' => "Bunday ID mavjud emas. Iltimos, quyidagi ID lardan birini tanlang:\n$idsText",
-        'parse_mode' => 'html'
-    ]);
 }
