@@ -18,9 +18,8 @@ $callBackMessageId = $callbackQuery->message->message_id;
 
 if ($callbackQuery){
     if (mb_strpos($callBackData, 'edit_') !== false){
-        $taskId = explode('edit_', $callBackMessageId)[1];
+        $taskId = explode('edit_', $callBackData)[1];
         $redis->set('edit_' . $callBackChatId, $taskId);
-
         $bot->makeRequest('editMessageText', [
             'chat_id' => $callBackChatId,
             'message_id' => $callBackMessageId,
@@ -74,7 +73,7 @@ if ($update) {
         try {
             $bot->makeRequest('sendMessage', [
                 'chat_id' => $chatId,
-                'text' => "To see a task, type the task's ID."
+                'text' => 'Salom! 📱 Sizning tasklaringizni ko\'rish uchun /tasks buyrug\'ini yozing.'
             ]);
         } catch (\GuzzleHttp\Exception\GuzzleException $e) {
 
@@ -93,12 +92,15 @@ if ($update) {
 
         }
     }
-    if ($text && $redis->get('edit_' . $chatId)) {
-        $todos->updateTitle($redis->get('edit_' . $chatId), $text);
-        $bot->makeRequest('sendMessage', [
-            'chat_id' => $chatId,
-            'text' =>   'title updated'
-        ]);
-        $redis->del('edit_' . $chatId);
+    if ($text) {
+        if($redis->get('edit_' . $chatId))
+        {
+            $todos->updateTitle($redis->get('edit_' . $chatId), $text);
+            $bot->makeRequest('sendMessage', [
+                'chat_id' => $chatId,
+                'text' =>   'title updated'
+            ]);
+            $redis->del('edit_' . $chatId);
+        }
     }
 }
