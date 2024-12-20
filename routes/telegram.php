@@ -20,7 +20,6 @@ if ($callbackQuery){
     if (mb_strpos($callBackData, 'edit_') !== false){
         $taskId = explode('edit_', $callBackData)[1];
         $redis->set('edit_' . $callBackChatId, $taskId);
-
         $bot->makeRequest('editMessageText', [
             'chat_id' => $callBackChatId,
             'message_id' => $callBackMessageId,
