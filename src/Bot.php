@@ -22,8 +22,7 @@ class Bot {
     }
     public function getUserTasks(int $chatId): false|array
     {
-        $todo = new Todo();
-        return $todo->getTodoByTelegramId($chatId);
+        return (new ToDo())->getTodoByTelegramId($chatId);
     }
 
 

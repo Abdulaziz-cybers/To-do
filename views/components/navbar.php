@@ -22,6 +22,7 @@
                             <li><a class="dropdown-item" href="/todos"><?= $_SESSION['user']['email'] ?? '' ?></a></li>
                             <li><a class="dropdown-item text-primary" target="_blank" href="https://t.me/toodoAppbot?start=<?=$_SESSION['user']['id']?>">Sync with Telegram</a></li>
                             <li><a class="dropdown-item text-danger" href="/logout">Log out</a></li>
+
                         </ul>
                     </li>
                 <?php else: ?>

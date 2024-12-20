@@ -30,24 +30,28 @@ if ($callbackQuery){
     if (mb_stripos($callBackData,'task_')!==false){
         $taskId = explode('task_',$callBackData)[1];
         $todo = $todos->edit($taskId);
-        $bot->makeRequest('editMessageText',[
-            'chat_id' => $callBackChatId,
-            'message_id' => $callBackMessageId,
-            'text' => "Edit task",
-            'reply_markup' => json_encode([
-                'inline_keyboard' => [
-                    [
-                        ['callback_data'=>'complete_' . $todo['id'], 'text'=>'Complete'],
-                        ['callback_data'=>'in_progress_' . $todo['id'], 'text'=>'In progress'],
-                        ['callback_data'=>'pending_' . $todo['id'], 'text'=>'Pending']
+        try {
+            $bot->makeRequest('editMessageText', [
+                'chat_id' => $callBackChatId,
+                'message_id' => $callBackMessageId,
+                'text' => "Edit task",
+                'reply_markup' => json_encode([
+                    'inline_keyboard' => [
+                        [
+                            ['callback_data' => 'complete_' . $todo['id'], 'text' => 'Complete'],
+                            ['callback_data' => 'in_progress_' . $todo['id'], 'text' => 'In progress'],
+                            ['callback_data' => 'pending_' . $todo['id'], 'text' => 'Pending']
+                        ]
                     ]
-                ]
-            ])
-        ]);
+                ])
+            ]);
+        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+
+        }
     }
     if (mb_stripos($callBackData,'complete_')!==false){
         $taskId = explode('complete_',$callBackData)[1];
-        $todos->updateStatus((int)$taskId,'complete');
+        $todos->updateStatus((int)$taskId,'completed');
     }
     if (mb_stripos($callBackData,'in_progress_')!==false){
         $taskId = explode('in_progress_',$callBackData)[1];
@@ -63,10 +67,14 @@ if ($update) {
     $chatId = $update->message->chat->id;
     $text = $update->message->text;
     if ($update->message->text === '/start') {
-        $bot->makeRequest('sendMessage', [
-            'chat_id' => $chatId,
-            'text' => "To see a task, type the task's ID."
-        ]);
+        try {
+            $bot->makeRequest('sendMessage', [
+                'chat_id' => $chatId,
+                'text' => "To see a task, type the task's ID."
+            ]);
+        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+
+        }
         exit();
     }
     if (mb_stripos($update->message->text, '/start') !== false) {
