@@ -17,8 +17,8 @@ $callBackChatId = $callbackQuery->message->chat->id;
 $callBackMessageId = $callbackQuery->message->message_id;
 
 if ($callbackQuery){
-    if (mb_strpos($callBackMessageId, 'edit_') !== false){
-        $taskId = explode('edit_', $callBackMessageId)[1];
+    if (mb_strpos($callBackData, 'edit_') !== false){
+        $taskId = explode('edit_', $callBackData)[1];
         $redis->set('edit_' . $callBackChatId, $taskId);
 
         $bot->makeRequest('editMessageText', [
@@ -41,6 +41,9 @@ if ($callbackQuery){
                             ['callback_data' => 'complete_' . $todo['id'], 'text' => 'Complete'],
                             ['callback_data' => 'in_progress_' . $todo['id'], 'text' => 'In progress'],
                             ['callback_data' => 'pending_' . $todo['id'], 'text' => 'Pending']
+                        ],
+                        [
+                            ['callback_data' => 'edit_' . $todo['id'], 'text' => 'Edit']
                         ]
                     ]
                 ])
@@ -70,7 +73,7 @@ if ($update) {
         try {
             $bot->makeRequest('sendMessage', [
                 'chat_id' => $chatId,
-                'text' => "To see a task, type the task's ID."
+                'text' => 'Salom! 📱 Sizning tasklaringizni ko\'rish uchun /tasks buyrug\'ini yozing.'
             ]);
         } catch (\GuzzleHttp\Exception\GuzzleException $e) {
 
