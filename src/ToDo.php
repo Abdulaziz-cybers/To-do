@@ -69,6 +69,15 @@ class ToDo
             'status' => $status
         ]);
     }
+    public function updateTitle(int $id, string $title): bool
+    {
+        $sql = "UPDATE todos set title=:title,updated_at=NOW() where id=:id";
+        $stmt = $this->db->pdo->prepare($sql);
+        return $stmt->execute([
+            'id' => $id,
+            'title' => $title
+        ]);
+    }
     public function getIDs(): false|array
     {
         $sql = "SELECT GROUP_CONCAT(id) AS id_list FROM todos";
