@@ -31,9 +31,16 @@ class Router {
             $this->extracted($route, $callback);
         }
     }
-    public function put ($route, $callback): void
+    public function putApi ($route, $callback): void
     {
         if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+            $this->extracted($route, $callback);
+        }
+    }
+
+    public function put ($route, $callback): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['_method']) && strtoupper($_POST['_method']) === 'PUT') {
             $this->extracted($route, $callback);
         }
     }

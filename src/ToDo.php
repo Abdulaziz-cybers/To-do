@@ -19,11 +19,11 @@ class ToDo
         $stmt = $this->db->pdo->prepare($sql);
         return $stmt->execute([$title, 'pending', $dueDate]);
     }
-    public function getAllTodosOfUser(): false|array
+    public function getAllTodosOfUser($id): false|array
     {
         $sql = "Select * from todos where user_id=:id";
         $stmt = $this->db->pdo->prepare($sql);
-        $stmt->execute([':id'=>$_SESSION['user']['id']]);
+        $stmt->execute([':id'=>$id]);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
     public function getTodosWithoutU(): false|array
@@ -60,6 +60,24 @@ class ToDo
             'due_date' => $dueDate
         ]);
     }
+    public function updateStatus(int $id, string $status): bool
+    {
+        $sql = "UPDATE todos set status=:status,updated_at=NOW() where id=:id";
+        $stmt = $this->db->pdo->prepare($sql);
+        return $stmt->execute([
+            'id' => $id,
+            'status' => $status
+        ]);
+    }
+    public function updateTitle(int $id, string $title): bool
+    {
+        $sql = "UPDATE todos set title=:title,updated_at=NOW() where id=:id";
+        $stmt = $this->db->pdo->prepare($sql);
+        return $stmt->execute([
+            'id' => $id,
+            'title' => $title
+        ]);
+    }
     public function getIDs(): false|array
     {
         $sql = "SELECT GROUP_CONCAT(id) AS id_list FROM todos";
@@ -71,4 +89,12 @@ class ToDo
             ? explode(',', $result['id_list'])
             : false;
     }
+    public function getTodoByTelegramId(int $telegramId): false|array
+    {
+        $sql = "Select todos.title, todos.status,todos.due_date,todos.id as task_id from todos INNER JOIN users on todos.user_id = users.id where users.telegram_id = :telegramId";
+        $stmt = $this->db->pdo->prepare($sql);
+        $stmt->execute([':telegramId' => $telegramId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }
+

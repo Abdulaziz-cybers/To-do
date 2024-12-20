@@ -40,4 +40,14 @@ class Users
         ]);
         return $stmt->fetch();
     }
+    public function setTelegramId(int $id,int $telegramId): void
+    {
+        $query = "UPDATE users SET telegram_id = :telegramId WHERE id = :id";
+        $stmt = $this->db->pdo->prepare($query);
+        $stmt->execute([
+            'id' => $id,
+            'telegramId' => $telegramId
+        ]);
+    }
+
 }

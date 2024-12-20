@@ -28,7 +28,7 @@ $router->get('/api/todos/{id}', function ($id) use ($todos) {
     $result = $todos->edit($id);
     echo json_encode($result);
 });
-$router->put('/api/todos/{id}', function ($id) use ($todos) {
+$router->putApi('/api/todos/{id}', function ($id) use ($todos) {
     $input = json_decode(file_get_contents('php://input'), true);
     if (isset($input['title'], $input['status'], $input['due_date'])) {
         $result = $todos->update($id, $input['title'], $input['status'], $input['due_date']);
