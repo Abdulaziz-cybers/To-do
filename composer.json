@@ -4,8 +4,7 @@
         "ext-pdo": "*",
         "guzzlehttp/guzzle": "^7.5",
         "larapack/dd": "^1.1",
-        "ext-json": "*",
-        "ext-redis": "*"
+      "ext-redis": "*"
     },
     "autoload": {
         "psr-4": {
