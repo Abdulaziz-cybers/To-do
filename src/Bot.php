@@ -12,7 +12,6 @@ class Bot {
             'base_uri'=>"https://api.telegram.org/bot" . $_ENV['TG2_TOKEN'] . "/"
         ]);
     }
-
     /**
      * @throws GuzzleException
      */
