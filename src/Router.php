@@ -39,8 +39,7 @@ class Router {
     }
     public function put ($route, $callback): void
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-            if ($_SERVER[''])
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['_method']) && strtoupper($_POST['_method']) === 'PUT') {
             $this->extracted($route, $callback);
         }
     }
