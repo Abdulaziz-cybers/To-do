@@ -4,6 +4,9 @@ $todos = new App\ToDo();
 $bot = new App\Bot();
 $users= new App\Users();
 
+$redis = new Redis();
+$redis->connect('127.0.0.1');
+
 $update = json_decode(file_get_contents('php://input'));
 
 $callbackQuery = $update->callback_query;
@@ -14,6 +17,16 @@ $callBackChatId = $callbackQuery->message->chat->id;
 $callBackMessageId = $callbackQuery->message->message_id;
 
 if ($callbackQuery){
+    if (mb_strpos($callBackMessageId, 'edit_') !== false){
+        $taskId = explode('edit_', $callBackMessageId)[1];
+        $redis->set('edit_' . $callBackChatId, $taskId);
+
+        $bot->makeRequest('editMessageText', [
+            'chat_id' => $callBackChatId,
+            'message_id' => $callBackMessageId,
+            'text' => 'Enter new task title'
+        ]);
+    }
     if (mb_stripos($callBackData,'task_')!==false){
         $taskId = explode('task_',$callBackData)[1];
         $todo = $todos->edit($taskId);
@@ -52,7 +65,7 @@ if ($callbackQuery){
 
 if ($update) {
     $chatId = $update->message->chat->id;
-
+    $text = $update->message->text;
     if ($update->message->text === '/start') {
         try {
             $bot->makeRequest('sendMessage', [
@@ -75,5 +88,13 @@ if ($update) {
         } catch (\GuzzleHttp\Exception\GuzzleException $e) {
 
         }
+    }
+    if ($text && $redis->get('edit_' . $chatId)) {
+        $todos->updateTitle($redis->get('edit_' . $chatId), $text);
+        $bot->makeRequest('sendMessage', [
+            'chat_id' => $chatId,
+            'text' =>   'title updated'
+        ]);
+        $redis->del('edit_' . $chatId);
     }
 }

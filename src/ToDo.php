@@ -62,13 +62,20 @@ class ToDo
     }
     public function updateStatus(int $id, string $status): bool
     {
-        $dueDate = new \DateTime();
         $sql = "UPDATE todos set status=:status,updated_at=NOW() where id=:id";
-        $dueDate = $dueDate->format('Y-m-d H:i:s');
         $stmt = $this->db->pdo->prepare($sql);
         return $stmt->execute([
             'id' => $id,
             'status' => $status
+        ]);
+    }
+    public function updateTitle(int $id, string $title): bool
+    {
+        $sql = "UPDATE todos set title=:title,updated_at=NOW() where id=:id";
+        $stmt = $this->db->pdo->prepare($sql);
+        return $stmt->execute([
+            'id' => $id,
+            'title' => $title
         ]);
     }
     public function getIDs(): false|array
