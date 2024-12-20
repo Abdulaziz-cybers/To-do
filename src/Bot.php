@@ -3,6 +3,8 @@
 namespace App;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+
 class Bot {
     private Client $client;
     public function __construct () {
@@ -10,11 +12,15 @@ class Bot {
             'base_uri'=>"https://api.telegram.org/bot" . $_ENV['TG2_TOKEN'] . "/"
         ]);
     }
+
+    /**
+     * @throws GuzzleException
+     */
     public function makeRequest (string $method, array $params): void
     {
         $this->client->post($method, ['json' => $params]);
     }
-    public function getUserTasks(int $chatId)
+    public function getUserTasks(int $chatId): false|array
     {
         $todo = new Todo();
         return $todo->getTodoByTelegramId($chatId);
@@ -48,12 +54,15 @@ class Bot {
             $i ++;
             $buttons[] = [
                 'text' => $i,
-                'callback_data' => $task['id']
+                'callback_data' => 'task_' . $task['task_id']
             ];
         }
         return array_chunk($buttons, 2);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function sendUserTasks(int $chatId): void
     {
         $tasksLIst = $this->prepareTaskLIst($chatId);
