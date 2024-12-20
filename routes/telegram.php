@@ -17,7 +17,7 @@ $callBackChatId = $callbackQuery->message->chat->id;
 $callBackMessageId = $callbackQuery->message->message_id;
 
 if ($callbackQuery){
-    if (mb_strpos($callBackMessageId, 'edit_') !== false){
+    if (mb_strpos($callBackData, 'edit_') !== false){
         $taskId = explode('edit_', $callBackMessageId)[1];
         $redis->set('edit_' . $callBackChatId, $taskId);
 
@@ -41,7 +41,11 @@ if ($callbackQuery){
                             ['callback_data' => 'complete_' . $todo['id'], 'text' => 'Complete'],
                             ['callback_data' => 'in_progress_' . $todo['id'], 'text' => 'In progress'],
                             ['callback_data' => 'pending_' . $todo['id'], 'text' => 'Pending']
+                        ],
+                        [
+                            ['callback_data' => 'edit_' . $todo['id'], 'text' => 'Edit']
                         ]
+
                     ]
                 ])
             ]);
