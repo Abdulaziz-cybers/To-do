@@ -91,12 +91,15 @@ if ($update) {
 
         }
     }
-    if ($text && $redis->get('edit_' . $chatId)) {
-        $todos->updateTitle($redis->get('edit_' . $chatId), $text);
-        $bot->makeRequest('sendMessage', [
-            'chat_id' => $chatId,
-            'text' =>   'title updated'
-        ]);
-        $redis->del('edit_' . $chatId);
+    if ($text) {
+        if($redis->get('edit_' . $chatId))
+        {
+            $todos->updateTitle($redis->get('edit_' . $chatId), $text);
+            $bot->makeRequest('sendMessage', [
+                'chat_id' => $chatId,
+                'text' =>   'title updated'
+            ]);
+            $redis->del('edit_' . $chatId);
+        }
     }
 }
